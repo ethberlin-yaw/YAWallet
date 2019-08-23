@@ -1,0 +1,31 @@
+{
+  "name": "eth-wallet",
+  "version": "0.0.1",
+  "description": "An ethereum wallet",
+  "productName": "Quasar App",
+  "cordovaId": "wallet.ethberlin.app",
+  "author": "",
+  "private": true,
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.0.0",
+    "bip39": "^2.5.0",
+    "crypto-js": "^3.1.9-1",
+    "ethers": "^4.0.36",
+    "localforage": "^1.7.3",
+    "quasar": "^1.0.0"
+  },
+  "devDependencies": {
+    "@quasar/app": "^1.0.0"
+  },
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "browserslist": [
+    "last 1 version, not dead, ie >= 11"
+  ]
+}
