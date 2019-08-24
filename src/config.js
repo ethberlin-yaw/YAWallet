@@ -12,6 +12,7 @@ config.INFURA = {
 
 config.CDAI = {
   KOVAN: '0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496',
+  RINKEBY: '0x6d7f0754ffeb405d23c51ce938289d4835be3b14',
 }
 
 config.DAI = {
@@ -23,16 +24,20 @@ config.ECTools_ADDRESS = {
   KOVAN: '0x4dc1bD11F305e7733f3afe21b95560Dd0Db0B174',
 }
 
-config.NETWORK = 'kovan';
+config.NETWORK = 'rinkeby';
 
 config.ERC20_GAS_COST = 200000
-
+/*
 config.CDAI = {
   KOVAN: '0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496',
 }
 
  config.DAI = {
   KOVAN: '0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99',
+}*/
+
+config.UNISWAP_EXCHANGE = {
+  RINKEBY: '0xe0bcb0a25797a945a6ea1599b6921d02b012410b',
 }
 
 module.exports = config;
