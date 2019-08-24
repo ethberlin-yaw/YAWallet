@@ -7,6 +7,6 @@ module.exports = function(deployer) {
     // Deploy the contract to the network
     deployer.deploy(ECTools);
 	deployer.link(ECTools, Wallet);
-    deployer.deploy(Wallet);
+    // deployer.deploy(Wallet);
 
 }

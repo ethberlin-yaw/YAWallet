@@ -29,7 +29,7 @@ module.exports = function (ctx) {
       // lang: 'de', // Quasar language
 
       // all: true, // --- includes everything; for dev only!
-
+      cssAddon: true,
       components: [
         'QLayout',
         'QHeader',
@@ -47,7 +47,11 @@ module.exports = function (ctx) {
         'QInput',
         'QSpinner',
         'QChip',
-        'QAvatar'
+        'QAvatar',
+        'QDialog',
+        'QCard',
+        'QCardSection',
+        'QSpace'
       ],
 
       directives: [
