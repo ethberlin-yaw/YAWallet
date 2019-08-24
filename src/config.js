@@ -25,4 +25,14 @@ config.ECTools_ADDRESS = {
 
 config.NETWORK = 'kovan';
 
+config.ERC20_GAS_COST = 200000
+
+config.CDAI = {
+  KOVAN: '0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496',
+}
+
+ config.DAI = {
+  KOVAN: '0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99',
+}
+
 module.exports = config;

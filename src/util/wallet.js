@@ -12,7 +12,9 @@ const Web3 = require('web3');
 import {
   Transaction
 } from 'ethereumjs-tx'
-import walletABI from '../../build/contracts/wallet.json'
+import walletABI from '../../build/contracts/Wallet.json'
+import ERC20 from '../../build/contracts/ERC20.json'
+
 
 process.versions = {node: '10.16.0'}
 
@@ -26,7 +28,8 @@ class EthWallet {
       await web3.eth.sendSignedTransaction(signedTx);
       // deploy the smart contract wallet
       const walletSignedTx = await createRawWalletDeployTx(walletInstance.wallet);
-      await web3.eth.sendSignedTransaction(walletSignedTx);
+      let receipt = await web3.eth.sendSignedTransaction(walletSignedTx);
+      walletInstance.contractWallet = (new web3.eth.Contract(walletABI.abi, receipt.contractAddress))._address;
       await walletInstance.saveWallet(password)
       return walletInstance
     } catch (err) {
@@ -72,6 +75,7 @@ class EthWallet {
         }
         const encrypted = await this.wallet.encrypt(password, options)
         await LF.setItem('m/99\'/66\'/0\'/0/0', encrypted)
+        await LF.setItem('contract-wallet', this.contractWallet._address)
         resolve(true)
       } catch (e) {
         reject(new Error(e))
@@ -83,13 +87,18 @@ class EthWallet {
     return new Promise(async (resolve, reject) => {
       try {
         const secretStorage = await LF.getItem('m/99\'/66\'/0\'/0/0')
+        const walletAddr = await LF.getItem('contract-wallet')
+
         if (!secretStorage.startsWith('{"address":')) {
           const bytes = await AES.decrypt(secretStorage.toString(), password)
           const plain = await bytes.toString(enc.Utf8)
           resolve(await Wallet.restore(plain, password))
         }
         if (secretStorage) {
-          resolve(await Wallet.fromEncryptedJson(secretStorage, password))
+          let walletInstance = new EthWallet()
+          walletInstance.wallet = await Wallet.fromEncryptedJson(secretStorage, password)
+          walletInstance.contractWallet = (new web3.eth.Contract(walletABI.abi, walletAddr))._address
+          resolve(walletInstance)
         }
       } catch (e) {
         reject(new Error(e.message))
@@ -99,6 +108,31 @@ class EthWallet {
 
   mnemonic() {
     return this.wallet.mnemonic
+  }
+
+  async ethBalance() {
+    return web3.utils.fromWei(await web3.eth.getBalance(this.wallet.address), 'ether')
+  }
+
+  async availableTx() {
+    let ethBalance = web3.utils.toBN(await web3.eth.getBalance(this.wallet.address))
+    let gasPrice = web3.utils.toBN(await web3.eth.getGasPrice())
+    console.log("gasPrice: ", gasPrice.toString(10))
+    let txCost = gasPrice.mul(web3.utils.toBN(config.ERC20_GAS_COST))
+    let txs = ethBalance.div(txCost)
+    return Math.floor(Number(txs.toString(10)))
+  }
+
+  async cdaiBalance() {
+    const web3 = new Web3(config.INFURA.KOVAN);
+    let token = new web3.eth.Contract(ERC20.abi, config.CDAI.KOVAN)
+    return await token.methods.balanceOf(this.contractWallet).call()
+  }
+
+   async daiBalance() {
+    const web3 = new Web3(config.INFURA.KOVAN);
+    let token = new web3.eth.Contract(ERC20.abi, config.DAI.KOVAN)
+    return await token.methods.balanceOf(this.contractWallet).call()
   }
 }
 

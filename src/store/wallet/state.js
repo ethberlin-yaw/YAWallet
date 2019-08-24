@@ -1,4 +1,6 @@
 export default {
   exists: false,
-  wallet: undefined
+  wallet: undefined,
+  ethBalance: '0',
+  ethusd: 0
 }
