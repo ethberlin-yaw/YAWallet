@@ -89,7 +89,9 @@ class EthWallet {
           resolve(await Wallet.restore(plain, password))
         }
         if (secretStorage) {
-          resolve(await Wallet.fromEncryptedJson(secretStorage, password))
+          let walletInstance = new EthWallet()
+          walletInstance.wallet = await Wallet.fromEncryptedJson(secretStorage, password)
+          resolve(walletInstance)
         }
       } catch (e) {
         reject(new Error(e.message))
@@ -99,6 +101,19 @@ class EthWallet {
 
   mnemonic() {
     return this.wallet.mnemonic
+  }
+
+  async ethBalance() {
+    return web3.utils.fromWei(await web3.eth.getBalance(this.wallet.address), 'ether')
+  }
+
+  async availableTx() {
+    let ethBalance = web3.utils.toBN(await web3.eth.getBalance(this.wallet.address))
+    let gasPrice = web3.utils.toBN(await web3.eth.getGasPrice())
+    console.log("gasPrice: ", gasPrice.toString(10))
+    let txCost = gasPrice.mul(web3.utils.toBN(config.ERC20_GAS_COST))
+    let txs = ethBalance.div(txCost)
+    return Math.floor(Number(txs.toString(10)))
   }
 }
 
