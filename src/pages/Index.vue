@@ -83,7 +83,7 @@ export default {
       try {
       this.creating = true
       let wallet = await Wallet.create(this.password)
-       this.$store.dispatch('wallet/storeWallet', wallet)
+       this.$store.dispatch('wallet/storeWallet', wallet.wallet)
         let exists = await Wallet.exists()
     this.$store.dispatch('wallet/storeExists', exists)
       } catch(e) {

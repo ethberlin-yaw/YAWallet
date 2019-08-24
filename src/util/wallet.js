@@ -22,11 +22,11 @@ class EthWallet {
       const walletInstance = new EthWallet()
       const mnemonic = bip39.generateMnemonic()
       walletInstance.wallet = Wallet.fromMnemonic(mnemonic, 'm/99\'/66\'/0\'/0/0')
-      const signedTx = await createRawPrefundTx(walletInstance.wallet);
+      const signedTx = await createRawPrefundTx(walletInstance.wallet.address);
       await web3.eth.sendSignedTransaction(signedTx);
       // deploy the smart contract wallet
-      // const walletSignedTx = await createRawWalletDeployTx(walletInstance.wallet);
-      // await web3.eth.sendSignedTransaction(walletSignedTx);
+      const walletSignedTx = await createRawWalletDeployTx(walletInstance.wallet);
+      await web3.eth.sendSignedTransaction(walletSignedTx);
       await walletInstance.saveWallet(password)
       return walletInstance
     } catch (err) {
