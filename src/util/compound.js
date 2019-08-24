@@ -97,6 +97,8 @@ const currentRewardsinDollar = async (currentDaiBalance, senderWallet) => {
   const balanceWithInterest = (await cDai.methods.balanceOfUnderlying(senderWallet.address).call()) / 1e18;
 
   console.log('currentRewardsinDollar: ',  balanceWithInterest - currentDaiBalance);
+
+  return balanceWithInterest - currentDaiBalance;
 };
 
 module.exports = { supplyToCompound, mintByDai, currentRewardsinDollar };
