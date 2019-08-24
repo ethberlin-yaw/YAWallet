@@ -13,9 +13,11 @@
     "@quasar/extras": "^1.0.0",
     "bip39": "^2.5.0",
     "crypto-js": "^3.1.9-1",
+    "ethereumjs-tx": "^2.1.0",
     "ethers": "^4.0.36",
     "localforage": "^1.7.3",
-    "quasar": "^1.0.0"
+    "quasar": "^1.0.0",
+    "web3": "^1.2.1"
   },
   "devDependencies": {
     "@quasar/app": "^1.0.0"
