@@ -91,7 +91,15 @@ const mintByDai = async (senderWallet) => {
   return daiReceipt;
 };
 
-module.exports = { supplyToCompound, mintByDai };
+// currentDaiBalance - amount of DAIs supplied to compounnd
+const currentRewardsinDollar = async (currentDaiBalance, senderWallet) => {
+  const cDai = new web3.eth.Contract(cdaiABI, config.CDAI.KOVAN);
+  const balanceWithInterest = (await cDai.methods.balanceOfUnderlying(senderWallet.address).call()) / 1e18;
+
+  console.log('currentRewardsinDollar: ',  balanceWithInterest - currentDaiBalance);
+};
+
+module.exports = { supplyToCompound, mintByDai, currentRewardsinDollar };
 
 // TESTING
 /*
@@ -100,6 +108,7 @@ const sender = {
   privateKey: '0xa0297f95a9565856b13f76feb4b2d09fea5514cd8e9ac7901165984463d7dedd',
 };
 
+currentRewardsinDollar(6, sender);
 mintByDai(sender);
 supplyToCompound(sender, '1000000000000000000');
 */
