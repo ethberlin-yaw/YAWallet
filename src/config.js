@@ -30,4 +30,8 @@ config.CDAI = {
   RINKEBY: '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea'
 }
 
+config.UNISWAP_EXCHANGE = {
+  RINKEBY: '0xe0bcb0a25797a945a6ea1599b6921d02b012410b',
+}
+
 module.exports = config;
