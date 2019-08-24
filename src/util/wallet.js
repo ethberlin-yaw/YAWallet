@@ -128,13 +128,13 @@ const createRawPrefundTx = async (toAddress) => {
       to: toAddress,
       value: web3.utils.toHex(web3.utils.toWei('0.05', 'ether'))
     }
-  
+
     const tx = new Transaction(txParams, {
       chain: config.NETWORK
     })
     tx.sign(privateKey)
     const serializedTx = tx.serialize().toString('hex')
-  
+
     return `0x${serializedTx}`;
   } catch(e) {
     console.log(e)
