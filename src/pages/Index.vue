@@ -1,65 +1,79 @@
 <template>
-<q-page class="flex flex-center">
+<q-page class="flex justify-center">
     <div class="column text-center" v-if="exists">
         <div v-if="address != ''">
             <div>
                 <div class="text-center">
-                  <div>
-                    <img width="150" height="150" :src="qrCode.dataURL" />
-                  </div>
+                    <div>
+                        <img width="150" height="150" :src="qrCode.dataURL" />
+                    </div>
 
-                <q-chip class="avatar-chip">
-                    <q-avatar size="2em" color="red" text-color="white">
-                        <img :src="blockies.create({seed: address})" />
-                    </q-avatar>
-                    {{address}}
+                    <q-chip class="avatar-chip">
+                        <q-avatar size="2em" color="red" text-color="white">
+                            <img :src="blockies.create({seed: address})" />
+                        </q-avatar>
+                        {{address}}
 
-                </q-chip>
+                    </q-chip>
                 </div>
-                <q-banner class="text-white bg-red q-my-lg">
-                    Your balance is below the minimum required balance. Send 5 DAI to this wallet in order to begin.
+                <q-banner v-if="parseFloat(daiBalance)<5 && parseFloat(cdaiBalance) == 0" class="text-white bg-red q-my-lg">
+                    Your balance is below the minimum required balance. Send some DAI to this wallet in order to begin.
                     Or get some DAI from the faucet (testnet only)
-                    <q-btn v-if="this.mintingDAI===false" @click="getDAI" class="q-my-lg" outline color="white" label="Get DAI from faucet" />
+                    <q-btn v-if="this.mintingDAI===false" @click="getDAI" class="q-my-md" outline color="white" label="Get DAI from faucet" />
                     <div v-else class="row items-center">
-                      <q-spinner color="white"></q-spinner>
-                       &nbsp; Getting some DAI...
+                        <q-spinner color="white"></q-spinner>
+                        &nbsp; Getting some DAI...
                     </div>
                 </q-banner>
+                <q-banner v-else-if="parseFloat(daiBalance)>5 && parseFloat(cdaiBalance)==0" class="text-white bg-green q-my-lg">
+                    You've got some DAI ! now Compound it and earn interest to pay for your transactions.
+                    <q-btn v-if="compounding === false" @click="compoundDai" color="white" outline label="COMPOUND MY DAI" />
+                    <div v-else class="row items-center">
+                        <q-spinner color="white" :thickness="2" /> &nbsp; Compounding !</div>
+                </q-banner>
                 <q-banner class="text-white bg-blue q-my-lg">
-                    You currently have {{gasusd(ethBalance, ethusd).toFixed(2)}} USD in network fees.
+                    You currently have <b>&#36; {{totalAvailable.toFixed(6)}} </b> in network fees.<br />
+                    <span class="q-caption">You have earned <b>&cent; {{this.intrestEarned}}</b> in intrest so far </span>
                 </q-banner>
             </div>
 
             <div>
-                <q-list bordered class="q-my-sm">
+                <q-list bordered class="q-my-sm q-mb-xl absolute-bottom q-mx-sm">
 
-                    <q-item clickable v-ripple>
-                        <q-item-section avatar>
-                            <q-avatar>
-                                <img src="/assets/dai.svg">
-                            </q-avatar>
-                        </q-item-section>
-                        <q-item-section>DAI</q-item-section>
-                        <q-item-section>{{parseFloat(daiBalance).toFixed(2)}}</q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                        <q-item-section avatar>
-                            <q-avatar>
-                                <img src="/assets/usdc.png">
-                            </q-avatar>
-                        </q-item-section>
-                        <q-item-section>USDC</q-item-section>
-                        <q-item-section>10</q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                        <q-item-section avatar>
-                            <q-avatar>
-                                <img src="/assets/lpt.png">
-                            </q-avatar>
-                        </q-item-section>
-                        <q-item-section>LPT</q-item-section>
-                        <q-item-section>55.39</q-item-section>
-                    </q-item>
+                    <q-scroll-area class="viewh">
+                        <q-item clickable v-ripple>
+                            <q-item-section avatar>
+                                <q-avatar>
+                                    <img src="/assets/dai.svg">
+                                </q-avatar>
+                            </q-item-section>
+                            <q-item-section>DAI</q-item-section>
+                            <q-item-section>{{parseFloat(daiBalance).toFixed(2)}}</q-item-section>
+                            <q-btn label="Send" color="primary" @click="DAIcard = true" />
+
+                        </q-item>
+                        <q-item clickable v-ripple>
+                            <q-item-section avatar>
+                                <q-avatar>
+                                    <img src="/assets/usdc.png">
+                                </q-avatar>
+                            </q-item-section>
+                            <q-item-section>USDC</q-item-section>
+                            <q-item-section>10</q-item-section>
+                            <q-btn label="Send" color="primary" @click="DAIcard = true" />
+
+                        </q-item>
+                        <q-item clickable v-ripple>
+                            <q-item-section avatar>
+                                <q-avatar>
+                                    <img src="/assets/lpt.png">
+                                </q-avatar>
+                            </q-item-section>
+                            <q-item-section>LPT</q-item-section>
+                            <q-item-section>55.39</q-item-section>
+                            <q-btn label="Send" color="primary" @click="DAIcard = true" />
+                        </q-item>
+                    </q-scroll-area>
 
                 </q-list>
             </div>
@@ -99,6 +113,55 @@
             </q-card-section>
         </q-card>
     </q-dialog>
+
+    <q-dialog :maximized="true" transition-show="slide-up" transition-hide="slide-down" v-model="DAIcard">
+        <q-card>
+            <q-card-section class="row justify-between q-mb-lg">
+                <div class="text-h6">Transfer Tokens</div>
+                <q-space />
+                <q-btn class="" icon="close" flat round dense @click="DAIcard = false" />
+            </q-card-section>
+            <q-card-section>
+
+                <q-list bordered>
+
+                    <q-item clickable v-ripple>
+                        <q-item-section avatar>
+                            <q-avatar square>
+                                <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                            </q-avatar>
+                        </q-item-section>
+                        <q-item-section>Alex Kert</q-item-section>
+                    </q-item>
+
+                    <q-item clickable v-ripple>
+                        <q-item-section avatar>
+                            <q-avatar square>
+                                <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                            </q-avatar>
+                        </q-item-section>
+                        <q-item-section>Martin Moses</q-item-section>
+                    </q-item>
+
+                </q-list>
+
+            </q-card-section>
+
+            <q-card-section>
+                <p> Or scan QR:</p>
+                <q-btn flat color="primary">Scan</q-btn>
+            </q-card-section>
+
+            <q-card-section>
+                <p>Amount in DAI:</p>
+                <q-input />
+                <br>
+                <p>Address: SOME ADDRESS</p>
+                <q-btn flat color="primary">Send</q-btn>
+            </q-card-section>
+
+        </q-card>
+    </q-dialog>
 </q-page>
 </template>
 
@@ -113,7 +176,20 @@ import {
     gasusd
 } from '../util/gas'
 import EthereumQRPlugin from 'ethereum-qr-code'
-import { supplyToCompound, mintByDai } from '../util/compound'
+import {
+    supplyToCompound,
+    mintByDai,
+    compounded
+} from '../util/compound'
+import {
+    utils
+} from 'web3'
+import {
+    setInterval
+} from 'timers';
+import {
+    open3Box
+} from '../util/box'
 
 export default {
     name: 'PageIndex',
@@ -126,7 +202,11 @@ export default {
             gasusd: gasusd,
             revealSeed: false,
             qrCode: '',
-            mintingDAI: false
+            mintingDAI: false,
+            compounding: false,
+            totalAvailable: 0,
+            intrestEarned: 0,
+            DAIcard: false
         }
     },
     computed: mapState({
@@ -135,7 +215,8 @@ export default {
         seed: state => state.wallet.wallet ? state.wallet.wallet.wallet.mnemonic : '',
         ethBalance: state => state.wallet.wallet ? state.wallet.ethBalance : '0.00',
         ethusd: state => state.wallet.ethusd,
-        daiBalance: state => state.wallet.daiBalance
+        daiBalance: state => state.wallet.daiBalance,
+        cdaiBalance: state => state.wallet.cdaiBalance
     }),
     methods: {
         createWallet: async function () {
@@ -175,13 +256,14 @@ export default {
                 })
             }
             this.creating = false
-                        this.pollBalances()
+            this.pollBalances()
 
         },
         unlockWallet: async function () {
+            let wallet
             try {
                 this.unlocking = true
-                let wallet = await Wallet.getWallet(this.password)
+                wallet = await Wallet.getWallet(this.password)
                 this.$store.dispatch('wallet/storeWallet', wallet)
                 let ethBalance = await wallet.ethBalance()
                 this.$store.dispatch('wallet/ethBalance', ethBalance)
@@ -189,8 +271,7 @@ export default {
                 this.qrCode = await qr.toDataUrl({
                     to: wallet.wallet.address
                 })
-                console.log(await wallet.cdaiBalance())
-                console.log(await wallet.daiBalance())
+
             } catch (e) {
                 this.$q.notify({
                     timeout: 5000,
@@ -206,17 +287,32 @@ export default {
             this.unlocking = false
             this.pollBalances()
         },
-        getDAI: async function() {
-          this.mintingDAI = true
-          await mintByDai(this.$store.state.wallet.wallet.wallet)
-          this.mintingDAI = false
+        getDAI: async function () {
+            this.mintingDAI = true
+            await mintByDai(this.$store.state.wallet.wallet.wallet)
+            this.mintingDAI = false
         },
-        pollBalances: async function() {
-          setInterval(() => {
-            this.$store.dispatch('wallet/polleth', this.$store.state.wallet.wallet)
-            this.$store.dispatch('wallet/polldai', this.$store.state.wallet.wallet)
-            this.$store.dispatch('wallet/pollcdai', this.$store.state.wallet.wallet)
-          }, 5000)
+        pollBalances: async function () {
+            setInterval(() => {
+                this.$store.dispatch('wallet/polleth', this.$store.state.wallet.wallet)
+                this.$store.dispatch('wallet/polldai', this.$store.state.wallet.wallet)
+                this.$store.dispatch('wallet/pollcdai', this.$store.state.wallet.wallet)
+                this.totalAvailableGas()
+            }, 5000)
+        },
+        compoundDai: async function () {
+            this.compounding = true
+            await supplyToCompound(this.$store.state.wallet.wallet.wallet, utils.toWei('100', 'ether'))
+            this.compounding = false
+        },
+        totalAvailableGas: async function () {
+            let compound = utils.fromWei(await compounded(), 'ether') || 100
+            let intrest = this.cdaiBalance - compound
+            console.log(this.cdaiBalance, compound)
+            let intrestEarned = (intrest * 100).toFixed(4)
+            let totalAvailable = gasusd(this.ethBalance, this.ethusd) + intrest
+            this.intrestEarned = intrestEarned >= 0 ? intrestEarned : 0
+            this.totalAvailable = totalAvailable >= 0 ? totalAvailable : 0
         }
     },
     async created() {
@@ -225,7 +321,7 @@ export default {
         setInterval(() => {
             this.$store.dispatch('wallet/ethusd')
         }, 5000)
-    }
+    },
 }
 </script>
 
@@ -242,5 +338,9 @@ export default {
 .avatar-chip {
     font-size: 1em;
     height: 2em;
+}
+
+.viewh {
+    height: 30vh;
 }
 </style>

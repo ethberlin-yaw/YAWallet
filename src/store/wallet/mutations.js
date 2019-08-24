@@ -22,5 +22,6 @@ export function daiBalance(state, bal) {
 }
 
 export function cdaiBalance(state, bal) {
+    console.log(bal)
     state.cdaiBalance = bal
 }

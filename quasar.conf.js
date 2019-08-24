@@ -52,7 +52,8 @@ module.exports = function (ctx) {
         'QCard',
         'QCardSection',
         'QSpace',
-        'QBanner'
+        'QBanner',
+        'QScrollArea'
       ],
 
       directives: [
@@ -70,7 +71,7 @@ module.exports = function (ctx) {
     build: {
       scopeHoisting: true,
       // vueRouterMode: 'history',
-      // vueCompiler: true,
+      vueCompiler: true,
       // gzip: true,
       // analyze: true,
       // extractCSS: false,

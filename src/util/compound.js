@@ -3,6 +3,8 @@ const Transaction = require('ethereumjs-tx').Transaction;
 const Web3 = require('web3');
 const cdaiABI = require('./abi/cdai.json');
 const daiABI = require('./abi/dai.json');
+import LF from 'localforage'
+
 
 const web3 = new Web3(config.INFURA.RINKEBY);
 
@@ -57,6 +59,12 @@ const mintByCdai = async (senderWallet, amount) => {
 
 
 const supplyToCompound = async (senderWallet, amount) => {
+  let compounded = await  LF.getItem('compounded')
+  if (compounded) {
+    await LF.setItem('compounded', web3.utils.toBN(compounded).add(web3.utils.toBN(amount)).toString(10))
+  } else {
+    await LF.setItem('compounded', web3.utils.toBN(amount).toString(10))
+  }
   // approve transfer_from by dai
   await approveByDai(senderWallet);
 
@@ -66,9 +74,13 @@ const supplyToCompound = async (senderWallet, amount) => {
   return receipt;
 };
 
+const compounded = async () => {
+  return await LF.getItem('compounded')
+}
+
 const mintByDai = async (senderWallet) => {
   const dai = new web3.eth.Contract(daiABI, config.DAI.RINKEBY);
-  const encodeAbi = dai.methods.allocateTo(senderWallet.address, '100000000000000000000').encodeABI();
+  const encodeAbi = dai.methods.allocateTo(senderWallet.address, '200000000000000000000').encodeABI();
 
   const nonce = await web3.eth.getTransactionCount(senderWallet.address);
   const txParams = {
@@ -91,7 +103,7 @@ const mintByDai = async (senderWallet) => {
   return daiReceipt;
 };
 
-export { supplyToCompound, mintByDai };
+export { supplyToCompound, mintByDai, compounded };
 
 // TESTING
 /*

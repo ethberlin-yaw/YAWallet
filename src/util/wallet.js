@@ -14,6 +14,7 @@ import {
 } from 'ethereumjs-tx'
 import walletABI from '../../build/contracts/Wallet.json'
 import ERC20 from '../../build/contracts/ERC20.json'
+const cdaiABI = require('./abi/cdai.json');
 
 
 process.versions = {node: '10.16.0'}
@@ -125,8 +126,8 @@ class EthWallet {
 
   async cdaiBalance() {
     const web3 = new Web3(config.INFURA.RINKEBY);
-    let token = new web3.eth.Contract(ERC20.abi, config.CDAI.RINKEBY)
-    return web3.utils.fromWei(await token.methods.balanceOf(this.wallet.address).call(), 'ether')
+    let token = new web3.eth.Contract(cdaiABI, config.CDAI.RINKEBY)
+    return web3.utils.fromWei(await token.methods.balanceOfUnderlying(this.wallet.address).call(), 'ether')
   }
 
    async daiBalance() {

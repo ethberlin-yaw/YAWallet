@@ -10,10 +10,12 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "3box": "^1.10.7",
     "@quasar/extras": "^1.0.0",
     "axios": "^0.19.0",
     "bip39": "^2.5.0",
     "crypto-js": "^3.1.9-1",
+    "ethereum-qr-code": "^0.3.0",
     "ethereumjs-tx": "^2.1.0",
     "ethers": "^4.0.36",
     "localforage": "^1.7.3",
