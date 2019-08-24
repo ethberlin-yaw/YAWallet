@@ -16,3 +16,11 @@ export function ethBalance(state, ethBalance) {
 export function ethusd(state, price) {
     state.ethusd = price
 }
+
+export function daiBalance(state, bal) {
+    state.daiBalance = bal
+}
+
+export function cdaiBalance(state, bal) {
+    state.cdaiBalance = bal
+}

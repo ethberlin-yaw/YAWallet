@@ -3,7 +3,10 @@
     <div class="column text-center" v-if="exists">
         <div v-if="address != ''">
             <div>
-                <img width="150" height="150" :src="qrCode.dataURL" />
+                <div class="text-center">
+                  <div>
+                    <img width="150" height="150" :src="qrCode.dataURL" />
+                  </div>
 
                 <q-chip class="avatar-chip">
                     <q-avatar size="2em" color="red" text-color="white">
@@ -12,10 +15,15 @@
                     {{address}}
 
                 </q-chip>
+                </div>
                 <q-banner class="text-white bg-red q-my-lg">
                     Your balance is below the minimum required balance. Send 5 DAI to this wallet in order to begin.
-
-                    <q-btn class="q-my-lg" outline color="white" label="Deposit DAI" />
+                    Or get some DAI from the faucet (testnet only)
+                    <q-btn v-if="this.mintingDAI===false" @click="getDAI" class="q-my-lg" outline color="white" label="Get DAI from faucet" />
+                    <div v-else class="row items-center">
+                      <q-spinner color="white"></q-spinner>
+                       &nbsp; Getting some DAI...
+                    </div>
                 </q-banner>
                 <q-banner class="text-white bg-blue q-my-lg">
                     You currently have {{gasusd(ethBalance, ethusd).toFixed(2)}} USD in network fees.
@@ -32,7 +40,7 @@
                             </q-avatar>
                         </q-item-section>
                         <q-item-section>DAI</q-item-section>
-                        <q-item-section>5</q-item-section>
+                        <q-item-section>{{parseFloat(daiBalance).toFixed(2)}}</q-item-section>
                     </q-item>
                     <q-item clickable v-ripple>
                         <q-item-section avatar>
@@ -105,6 +113,7 @@ import {
     gasusd
 } from '../util/gas'
 import EthereumQRPlugin from 'ethereum-qr-code'
+import { supplyToCompound, mintByDai } from '../util/compound'
 
 export default {
     name: 'PageIndex',
@@ -116,7 +125,8 @@ export default {
             blockies: blockies,
             gasusd: gasusd,
             revealSeed: false,
-            qrCode: ''
+            qrCode: '',
+            mintingDAI: false
         }
     },
     computed: mapState({
@@ -124,7 +134,8 @@ export default {
         address: state => state.wallet.wallet ? state.wallet.wallet.wallet.address : '',
         seed: state => state.wallet.wallet ? state.wallet.wallet.wallet.mnemonic : '',
         ethBalance: state => state.wallet.wallet ? state.wallet.ethBalance : '0.00',
-        ethusd: state => state.wallet.ethusd
+        ethusd: state => state.wallet.ethusd,
+        daiBalance: state => state.wallet.daiBalance
     }),
     methods: {
         createWallet: async function () {
@@ -164,6 +175,8 @@ export default {
                 })
             }
             this.creating = false
+                        this.pollBalances()
+
         },
         unlockWallet: async function () {
             try {
@@ -191,6 +204,19 @@ export default {
                 })
             }
             this.unlocking = false
+            this.pollBalances()
+        },
+        getDAI: async function() {
+          this.mintingDAI = true
+          await mintByDai(this.$store.state.wallet.wallet.wallet)
+          this.mintingDAI = false
+        },
+        pollBalances: async function() {
+          setInterval(() => {
+            this.$store.dispatch('wallet/polleth', this.$store.state.wallet.wallet)
+            this.$store.dispatch('wallet/polldai', this.$store.state.wallet.wallet)
+            this.$store.dispatch('wallet/pollcdai', this.$store.state.wallet.wallet)
+          }, 5000)
         }
     },
     async created() {

@@ -19,3 +19,11 @@ export async function ethusd({commit}) {
 export async function polleth({commit}, wallet) {
     commit('ethBalance', await wallet.ethBalance())
 } 	
+
+export async function polldai({commit}, wallet) {
+    commit('daiBalance', await wallet.daiBalance())
+}
+
+export async function pollcdai({commit}, wallet) {
+    commit('cdaiBalance', await wallet.cdaiBalance())
+}

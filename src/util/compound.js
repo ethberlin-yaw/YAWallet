@@ -4,19 +4,19 @@ const Web3 = require('web3');
 const cdaiABI = require('./abi/cdai.json');
 const daiABI = require('./abi/dai.json');
 
-const web3 = new Web3(config.INFURA.KOVAN);
+const web3 = new Web3(config.INFURA.RINKEBY);
 
 // approve transfer_from in dai contract
 const approveByDai = async (senderWallet) => {
-  const dai = new web3.eth.Contract(daiABI, config.DAI.KOVAN);
-  const encodeAbi = dai.methods.approve(config.CDAI.KOVAN, '115792089237316195423570985008687907853269984665640564039457584007913129639935').encodeABI();
+  const dai = new web3.eth.Contract(daiABI, config.DAI.RINKEBY);
+  const encodeAbi = dai.methods.approve(config.CDAI.RINKEBY, '115792089237316195423570985008687907853269984665640564039457584007913129639935').encodeABI();
 
   const nonce = await web3.eth.getTransactionCount(senderWallet.address);
   const txParams = {
     nonce: web3.utils.toHex(nonce),
     gasPrice: '0x37E11D600',
     gasLimit: web3.utils.toHex(1990000),
-    to: config.DAI.KOVAN,
+    to: config.DAI.RINKEBY,
     data: encodeAbi,
   }
 
@@ -32,7 +32,7 @@ const approveByDai = async (senderWallet) => {
 // mint cdai by cdai contract
 const mintByCdai = async (senderWallet, amount) => {
   // mint
-  const cDai = new web3.eth.Contract(cdaiABI, config.CDAI.KOVAN);
+  const cDai = new web3.eth.Contract(cdaiABI, config.CDAI.RINKEBY);
   const encodeAbi = cDai.methods.mint(amount).encodeABI();
 
   const nonce = await web3.eth.getTransactionCount(senderWallet.address);
@@ -40,7 +40,7 @@ const mintByCdai = async (senderWallet, amount) => {
     nonce: web3.utils.toHex(nonce),
     gasPrice: '0x37E11D600',
     gasLimit: web3.utils.toHex(1990000),
-    to: config.CDAI.KOVAN,
+    to: config.CDAI.RINKEBY,
     data: encodeAbi,
   }
 
@@ -67,7 +67,7 @@ const supplyToCompound = async (senderWallet, amount) => {
 };
 
 const mintByDai = async (senderWallet) => {
-  const dai = new web3.eth.Contract(daiABI, config.DAI.KOVAN);
+  const dai = new web3.eth.Contract(daiABI, config.DAI.RINKEBY);
   const encodeAbi = dai.methods.allocateTo(senderWallet.address, '100000000000000000000').encodeABI();
 
   const nonce = await web3.eth.getTransactionCount(senderWallet.address);
@@ -75,7 +75,7 @@ const mintByDai = async (senderWallet) => {
     nonce: web3.utils.toHex(nonce),
     gasPrice: '0x37E11D600',
     gasLimit: web3.utils.toHex(1990000),
-    to: config.DAI.KOVAN,
+    to: config.DAI.RINKEBY,
     data: encodeAbi,
   }
 
@@ -91,7 +91,7 @@ const mintByDai = async (senderWallet) => {
   return daiReceipt;
 };
 
-module.exports = { supplyToCompound, mintByDai };
+export { supplyToCompound, mintByDai };
 
 // TESTING
 /*

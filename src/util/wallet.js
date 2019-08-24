@@ -124,22 +124,22 @@ class EthWallet {
   }
 
   async cdaiBalance() {
-    const web3 = new Web3(config.INFURA.KOVAN);
-    let token = new web3.eth.Contract(ERC20.abi, config.CDAI.KOVAN)
-    return await token.methods.balanceOf(this.contractWallet).call()
+    const web3 = new Web3(config.INFURA.RINKEBY);
+    let token = new web3.eth.Contract(ERC20.abi, config.CDAI.RINKEBY)
+    return web3.utils.fromWei(await token.methods.balanceOf(this.wallet.address).call(), 'ether')
   }
 
    async daiBalance() {
-    const web3 = new Web3(config.INFURA.KOVAN);
-    let token = new web3.eth.Contract(ERC20.abi, config.DAI.KOVAN)
-    return await token.methods.balanceOf(this.contractWallet).call()
+    const web3 = new Web3(config.INFURA.RINKEBY);
+    let token = new web3.eth.Contract(ERC20.abi, config.DAI.RINKEBY)
+    return web3.utils.fromWei(await token.methods.balanceOf(this.wallet.address).call(), 'ether')
   }
 }
 
 
 export default EthWallet
 
-const web3 = new Web3(config.INFURA.KOVAN);
+const web3 = new Web3(config.INFURA.RINKEBY);
 
 function link(bytecode, libName, libAddress) {
   let symbol = "__" + libName + "_".repeat(40 - libName.length - 2);
@@ -178,7 +178,7 @@ const createRawPrefundTx = async (toAddress) => {
 
 /* Create raw contract deployment tx*/
 const createRawWalletDeployTx = async (eoa) => {
-  walletABI.bytecode = link(walletABI.bytecode, "ECTools", config.ECTools_ADDRESS.KOVAN);
+  walletABI.bytecode = link(walletABI.bytecode, "ECTools", config.ECTools_ADDRESS.RINKEBY);
   const walletContract = new web3.eth.Contract(walletABI.abi);
   const encodeAbi = walletContract.deploy({
     data: walletABI.bytecode,
