@@ -12,7 +12,7 @@ const Web3 = require('web3');
 import {
   Transaction
 } from 'ethereumjs-tx'
-import walletABI from '../../build/contracts/wallet.json'
+import walletABI from '../../build/contracts/Wallet.json'
 
 process.versions = {node: '10.16.0'}
 
