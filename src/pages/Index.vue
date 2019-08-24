@@ -115,7 +115,7 @@
     </q-dialog>
 
     <q-dialog :maximized="true" transition-show="slide-up" transition-hide="slide-down" v-model="DAIcard">
-        <q-card>
+        <q-card style="width: 80%">
             <q-card-section class="row justify-between q-mb-lg">
                 <div class="text-h6">Transfer Tokens</div>
                 <q-space />
@@ -286,6 +286,7 @@ export default {
             }
             this.unlocking = false
             this.pollBalances()
+            console.log(await open3Box(wallet.wallet))
         },
         getDAI: async function () {
             this.mintingDAI = true

@@ -18,6 +18,7 @@
     "ethereum-qr-code": "^0.3.0",
     "ethereumjs-tx": "^2.1.0",
     "ethers": "^4.0.36",
+    "ethers-web3-bridge": "0.0.1",
     "localforage": "^1.7.3",
     "quasar": "^1.0.0",
     "web3": "^1.2.1"

@@ -1,13 +1,18 @@
 
-  const Web3 = require('web3')
-import config from '../config'
-const web3 = new Web3(config.INFURA.RINKEBY)
-import {providers, Wallet} from 'ethers'
 
+ 
+const ethProvider = wallet => {
+    return {
+        sendAsync: (data, callback) => {
+            wallet.signMessage(data.params[0]).then(result => {
+              callback(null, { result })
+            })
+          }
+    }
+  }
 
 export async function open3Box(wallet) {
-    let wall = new Wallet(wallet.privateKey, new providers.Web3Provider(web3.currentProvider))
-    console.log(wall)
-    let box = await Box.openBox(wallet.address, wall.provider)
+    let box = await Box.openBox(wallet.address, ethProvider(wallet))
+    console.log(box)
     return box
 }
