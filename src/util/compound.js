@@ -66,7 +66,32 @@ const supplyToCompound = async (senderWallet, amount) => {
   return receipt;
 };
 
-module.exports = { supplyToCompound };
+const mintByDai = async (senderWallet) => {
+  const dai = new web3.eth.Contract(daiABI, config.DAI.KOVAN);
+  const encodeAbi = dai.methods.allocateTo(senderWallet.address, '100000000000000000000').encodeABI();
+
+  const nonce = await web3.eth.getTransactionCount(senderWallet.address);
+  const txParams = {
+    nonce: web3.utils.toHex(nonce),
+    gasPrice: '0x37E11D600',
+    gasLimit: web3.utils.toHex(1990000),
+    to: config.DAI.KOVAN,
+    data: encodeAbi,
+  }
+
+  const tx = new Transaction(txParams, {
+    chain: config.NETWORK
+  });
+  tx.sign(Buffer.from(senderWallet.privateKey.substring(2), 'hex'));
+  const serializedTx = tx.serialize().toString('hex');
+
+  const daiReceipt = await web3.eth.sendSignedTransaction(`0x${serializedTx}`);
+  console.log('dai mint receipt: ', daiReceipt);
+
+  return daiReceipt;
+};
+
+module.exports = { supplyToCompound, mintByDai };
 
 // TESTING
 /*
@@ -75,5 +100,6 @@ const sender = {
   privateKey: '0xa0297f95a9565856b13f76feb4b2d09fea5514cd8e9ac7901165984463d7dedd',
 };
 
+mintByDai(sender);
 supplyToCompound(sender, '1000000000000000000');
 */
