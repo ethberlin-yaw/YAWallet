@@ -10,6 +10,14 @@ config.INFURA = {
   GORLI: 'https://goerli.infura.io/v3/d7ef95bbf433420a96fa91c4a35b200b',
 }
 
+config.CDAI = {
+  KOVAN: '0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496',
+}
+
+config.DAI = {
+  KOVAN: '0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99',
+}
+
 config.ECTools_ADDRESS = {
   ROPSTEN: '0x6d35b74c75d60d1170CfF354d8CB5083AB6c3009',
   KOVAN: '0x4dc1bD11F305e7733f3afe21b95560Dd0Db0B174',
