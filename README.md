@@ -11,7 +11,7 @@ Just like @pooltogether is using the accumulated interest to reward a lucky winn
 npm install
 quasar dev
 ```
-Currently it is hosted @`TODO`
+Currently it is hosted @`https://epic-davinci-4c111e.netlify.com/#/`
 
 ## Deployed Contracts
 - cDai: `0x6d7f0754ffeb405d23c51ce938289d4835be3b14`
