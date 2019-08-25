@@ -1,22 +1,25 @@
-# Quasar App (eth-wallet)
+# YAW - Yet Another Wallet
 
-An ethereum wallet
+An ethereum smart contract wallet which enforces users to maintain a minimum account balance (10 DAI) to provide gas free transactions by abstracting network fees with interest earned from DeFi lending protocols.
 
-## Install the dependencies
-```bash
-npm install
+User funds are automatically supplied to the compound.finance money market to gain interest in every block and every time the user's EOA ETH balance goes below the threshold amount, a fraction of the interest (cDai) is swapped with ETH using uniswap protocol.
+
+Just like @pooltogether is using the accumulated interest to reward a lucky winner and @rDai is using the accumulated interest to reward a pre-selected beneficiary, @yaw is using the same to cover gas.
+
+## How to Use
 ```
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
+npm install
 quasar dev
 ```
+Currently it is hosted @`TODO`
 
+## Deployed Contracts
+- cDai: `0x6d7f0754ffeb405d23c51ce938289d4835be3b14`
+- Dai: `0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea`
+- ECTools: `0xebF8E2fE235A7Ae45bBb4a4001457391cd0371E5`
+- uniswap exchange for cDai: `0xe0bcb0a25797a945a6ea1599b6921d02b012410b`
+- Wallet contracts: deployed every time a new wallet gets created
 
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+## Team
+- Rajesh Subhankar (@rajeshsubhankar)
+- TODO
