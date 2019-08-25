@@ -75,6 +75,10 @@
                         </q-item>
                     </q-scroll-area>
 
+                    <q-item >
+                      <q-btn flat label="Add Friend" color="primary" @click="AddFriend = true" />
+                    </q-item>
+
                 </q-list>
             </div>
             <div class="fixed-bottom">
@@ -149,7 +153,7 @@
 
             <q-card-section>
                 <p> Or scan QR:</p>
-                <q-btn flat color="primary">Scan</q-btn>
+                <q-btn flat color="primary" @click="QRScanner = true" >Scan</q-btn>
             </q-card-section>
 
             <q-card-section>
@@ -162,6 +166,54 @@
 
         </q-card>
     </q-dialog>
+
+    <q-dialog v-model="QRScanner">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">Scan address</div>
+            </q-card-section>
+
+            <q-card-section>
+              <div>
+                <p class="error">{{ error }}</p>
+
+
+                <qrcode-stream @decode="onDecode" @init="onInit" />
+              </div>
+            </q-card-section>
+
+            <q-card-actions>
+              <q-btn flat label="Cancel" color="primary" @click="QRScanner = false" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+    <q-dialog v-model="AddFriend">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">Scan address</div>
+            </q-card-section>
+
+            <q-card-section>
+              <div>
+
+                <qrcode-stream @decode="onDecode" @init="onInit" />
+              </div>
+            </q-card-section>
+
+            <q-card-section>
+              <div class="text-h6">Friend Name</div>
+              <q-input v-model="new3boxfriend.name" />
+              <br>
+              <q-input v-model="new3boxfriend.address" placeholder="Address..." />
+              <q-btn flat label="Cancel" color="primary" @click="AddFriend = false" />
+              <q-btn flat label="Add friend" color="primary" @click="newContact" />
+            </q-card-section>
+
+
+          </q-card>
+        </q-dialog>
+
 </q-page>
 </template>
 
@@ -191,7 +243,8 @@ import {
     open3Box
 } from '../util/box'
 import {transferDAI} from '../util/transfer'
-
+import { QrcodeStream } from 'vue-qrcode-reader'
+import {newContact} from '../util/box'
 export default {
     name: 'PageIndex',
     data() {
@@ -211,9 +264,17 @@ export default {
             daiTransfer: {
               to: '',
               amount: ''
+            },
+            QRScanner: false,
+            AddFriend: false,
+            error: '',
+            new3boxfriend: {
+              address: '',
+              name: ''
             }
         }
     },
+    components: { QrcodeStream },
     computed: mapState({
         exists: state => state.wallet.exists,
         address: state => state.wallet.wallet ? state.wallet.wallet.wallet.address : '',
@@ -322,6 +383,33 @@ export default {
         },
         sendDAI: async function () {
           await transferDAI(this.daiTransfer.to, this.daiTransfer.amount, this.$store.state.wallet.wallet.wallet)
+        },
+        onDecode (result) {
+          this.new3boxfriend.address = result.split(':')[1].slice(0, -1)
+          console.log(this.new3boxfriend)
+        },
+
+        async onInit (promise) {
+          try {
+            await promise
+          } catch (error) {
+            if (error.name === 'NotAllowedError') {
+              this.error = "ERROR: you need to grant camera access permisson"
+            } else if (error.name === 'NotFoundError') {
+              this.error = "ERROR: no camera on this device"
+            } else if (error.name === 'NotSupportedError') {
+              this.error = "ERROR: secure context required (HTTPS, localhost)"
+            } else if (error.name === 'NotReadableError') {
+              this.error = "ERROR: is the camera already in use?"
+            } else if (error.name === 'OverconstrainedError') {
+              this.error = "ERROR: installed cameras are not suitable"
+            } else if (error.name === 'StreamApiNotSupportedError') {
+              this.error = "ERROR: Stream API is not supported in this browser"
+            }
+          }
+        },
+        newContact: async function (){
+          await newContact(this.new3boxfriend.address, this.new3boxfriend.name)
         }
     },
     async created() {

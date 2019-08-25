@@ -1,3 +1,4 @@
+import { getContractAddress } from "ethers/utils";
 
 
  
@@ -11,8 +12,15 @@ const ethProvider = wallet => {
     }
   }
 
+  let box 
 export async function open3Box(wallet) {
-    let box = await Box.openBox(wallet.address, ethProvider(wallet))
+    box = await Box.openBox(wallet.address, ethProvider(wallet))
     console.log(box)
     return box
+}
+
+export async function newContact(address, name) {
+   let contacts = await box.openSpace("contacts")
+    await contacts.private.set(address, name)
+    console.log(await contacts.private.all())
 }
