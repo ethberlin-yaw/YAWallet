@@ -24,3 +24,8 @@ export async function newContact(address, name) {
     await contacts.private.set(address, name)
     console.log(await contacts.private.all())
 }
+
+export async function getContacts() {
+    let contacts = await box.openSpace("contacts")
+    return await contacts.private.all()
+}

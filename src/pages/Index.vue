@@ -20,7 +20,7 @@
                     Your balance is below the minimum required balance. Send some DAI to this wallet in order to begin.
                     Or get some DAI from the faucet (testnet only)
                     <q-btn v-if="this.mintingDAI===false" @click="getDAI" class="q-my-md" outline color="white" label="Get DAI from faucet" />
-                    <div v-else class="row items-center">
+                    <div v-else class="row items-center justify-center">
                         <q-spinner color="white"></q-spinner>
                         &nbsp; Getting some DAI...
                     </div>
@@ -28,12 +28,12 @@
                 <q-banner v-else-if="parseFloat(daiBalance)>5 && parseFloat(cdaiBalance)==0" class="text-white bg-green q-my-lg">
                     You've got some DAI ! now Compound it and earn interest to pay for your transactions.
                     <q-btn v-if="compounding === false" @click="compoundDai" color="white" outline label="COMPOUND MY DAI" />
-                    <div v-else class="row items-center">
+                    <div v-else class="row items-center justify-center">
                         <q-spinner color="white" :thickness="2" /> &nbsp; Compounding !</div>
                 </q-banner>
                 <q-banner class="text-white bg-blue q-my-lg">
                     You currently have <b>&#36; {{totalAvailable.toFixed(6)}} </b> in network fees.<br />
-                    <span class="q-caption">You have earned <b>&cent; {{this.intrestEarned}}</b> in intrest so far </span>
+                    <span class="q-caption">You have <b>&cent; {{this.intrestEarned}}</b> in spendable intrest </span>
                 </q-banner>
             </div>
 
@@ -89,7 +89,7 @@
             <h6>Unlock your wallet</h6>
             <q-input v-model="password" type="password" placeholder="enter password..." class="q-my-md" :disabled="unlocking" />
             <q-btn color="primary" size="xl" @click="unlockWallet" label="Unlock Wallet" v-if="unlocking === false" />
-            <div class="flex items-center" v-else>
+            <div class="flex items-center justify-center" v-else>
                 <q-spinner color="primary" :thickness="2" size="3em" /> Unlocking wallet ...
             </div>
         </div>
@@ -99,7 +99,7 @@
         <h6>No wallet found. Create a new wallet</h6>
         <q-input v-model="password" type="password" placeholder="enter password..." class="q-my-md" />
         <q-btn size="xl" @click="createWallet" color="primary" label="Create New Wallet" v-if="creating === false" />
-        <div class="flex items-center" v-else>
+        <div class="flex items-center justify-center" v-else>
             <q-spinner color="primary" :thickness="2" size="3em" /> Creating wallet ...
         </div>
     </div>
@@ -129,22 +129,16 @@
 
                 <q-list bordered>
 
-                    <q-item clickable v-ripple>
+                    <q-item v-for="(contact, i) in contacts" clickable v-ripple v-bind:key="i" @click="selectRecipient(i)">
                         <q-item-section avatar>
                             <q-avatar square>
-                                <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                                <img :src="blockies.create({seed: i})">
                             </q-avatar>
                         </q-item-section>
-                        <q-item-section>Alex Kert</q-item-section>
-                    </q-item>
-
-                    <q-item clickable v-ripple>
-                        <q-item-section avatar>
-                            <q-avatar square>
-                                <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-                            </q-avatar>
+                        <q-item-section>{{contacts[i]}}</q-item-section>
+                        <q-item-section class="q-caption">
+                          {{i.substring(0, 10)+"..."}}
                         </q-item-section>
-                        <q-item-section>Martin Moses</q-item-section>
                     </q-item>
 
                 </q-list>
@@ -244,7 +238,7 @@ import {
 } from '../util/box'
 import {transferDAI} from '../util/transfer'
 import { QrcodeStream } from 'vue-qrcode-reader'
-import {newContact} from '../util/box'
+import {newContact, getContacts} from '../util/box'
 export default {
     name: 'PageIndex',
     data() {
@@ -271,7 +265,8 @@ export default {
             new3boxfriend: {
               address: '',
               name: ''
-            }
+            },
+            contacts: []
         }
     },
     components: { QrcodeStream },
@@ -352,7 +347,9 @@ export default {
             }
             this.unlocking = false
             this.pollBalances()
-            console.log(await open3Box(wallet.wallet))
+            await open3Box(wallet.wallet)
+            this.contacts = await getContacts()
+            console.log(this.contacts)
         },
         getDAI: async function () {
             this.mintingDAI = true
@@ -386,7 +383,8 @@ export default {
         },
         onDecode (result) {
           this.new3boxfriend.address = result.split(':')[1].slice(0, -1)
-          console.log(this.new3boxfriend)
+          this.daiTransfer.to = result.split(':')[1].slice(0, -1)
+          this.QRScanner = false
         },
 
         async onInit (promise) {
@@ -410,6 +408,9 @@ export default {
         },
         newContact: async function (){
           await newContact(this.new3boxfriend.address, this.new3boxfriend.name)
+        },
+        selectRecipient(address) {
+          this.daiTransfer.to = address
         }
     },
     async created() {

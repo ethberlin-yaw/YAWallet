@@ -53,7 +53,8 @@ module.exports = function (ctx) {
         'QCardSection',
         'QSpace',
         'QBanner',
-        'QScrollArea'
+        'QScrollArea',
+        'QCardActions'
       ],
 
       directives: [
