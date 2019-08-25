@@ -75,6 +75,10 @@
                         </q-item>
                     </q-scroll-area>
 
+                    <q-item >
+                      <q-btn flat label="Add Friend" color="primary" @click="AddFriend = true" />
+                    </q-item>
+
                 </q-list>
             </div>
             <div class="fixed-bottom">
@@ -185,6 +189,35 @@
           </q-card>
         </q-dialog>
 
+    <q-dialog v-model="AddFriend">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">Scan address</div>
+            </q-card-section>
+
+            <q-card-section>
+              <div>
+                <p class="error">{{ error }}</p>
+
+                <p class="decode-result">Last result: <b>{{ result }}</b></p>
+
+                <qrcode-stream @decode="onDecode" @init="onInit" />
+              </div>
+            </q-card-section>
+
+            <q-card-section>
+              <div class="text-h6">Friend Name</div>
+              <q-input />
+              <br>
+              <p>Friend address: SOME ADDRESS</p>
+              <q-btn flat label="Cancel" color="primary" @click="AddFriend = false" />
+              <q-btn flat label="Add friend" color="primary" @click="" />
+            </q-card-section>
+
+
+          </q-card>
+        </q-dialog>
+
 </q-page>
 </template>
 
@@ -237,6 +270,7 @@ export default {
               amount: ''
             },
             QRScanner: false,
+            AddFriend: false,
             result: '',
             error: ''
         }
