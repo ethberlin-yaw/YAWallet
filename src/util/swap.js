@@ -122,4 +122,4 @@ const swap = async (senderWallet, eoaAddress) => {
    console.log('compound receipt:', compoundReceipt);
 };
 
- module.exports = { liquidateExchange, swap, redeem };
+export { liquidateExchange, swap, redeem };

@@ -115,7 +115,7 @@
     </q-dialog>
 
     <q-dialog :maximized="true" transition-show="slide-up" transition-hide="slide-down" v-model="DAIcard">
-        <q-card style="width: 80%">
+        <q-card>
             <q-card-section class="row justify-between q-mb-lg">
                 <div class="text-h6">Transfer Tokens</div>
                 <q-space />
@@ -154,10 +154,10 @@
 
             <q-card-section>
                 <p>Amount in DAI:</p>
-                <q-input />
+                <q-input v-model="daiTransfer.amount" placeholder="0.00 DAI" />
                 <br>
-                <p>Address: SOME ADDRESS</p>
-                <q-btn flat color="primary">Send</q-btn>
+                <q-input v-model="daiTransfer.to" placeholder="Enter address..." />
+                <q-btn @click="sendDAI" flat color="primary">Send</q-btn>
             </q-card-section>
 
         </q-card>
@@ -190,6 +190,7 @@ import {
 import {
     open3Box
 } from '../util/box'
+import {transferDAI} from '../util/transfer'
 
 export default {
     name: 'PageIndex',
@@ -206,7 +207,11 @@ export default {
             compounding: false,
             totalAvailable: 0,
             intrestEarned: 0,
-            DAIcard: false
+            DAIcard: false,
+            daiTransfer: {
+              to: '',
+              amount: ''
+            }
         }
     },
     computed: mapState({
@@ -303,7 +308,7 @@ export default {
         },
         compoundDai: async function () {
             this.compounding = true
-            await supplyToCompound(this.$store.state.wallet.wallet.wallet, utils.toWei('100', 'ether'))
+            await supplyToCompound(this.$store.state.wallet.wallet.wallet, utils.toWei('1000', 'ether'))
             this.compounding = false
         },
         totalAvailableGas: async function () {
@@ -314,6 +319,9 @@ export default {
             let totalAvailable = gasusd(this.ethBalance, this.ethusd) + intrest
             this.intrestEarned = intrestEarned >= 0 ? intrestEarned : 0
             this.totalAvailable = totalAvailable >= 0 ? totalAvailable : 0
+        },
+        sendDAI: async function () {
+          await transferDAI(this.daiTransfer.to, this.daiTransfer.amount, this.$store.state.wallet.wallet.wallet)
         }
     },
     async created() {

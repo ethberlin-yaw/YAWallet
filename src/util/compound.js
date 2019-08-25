@@ -80,7 +80,7 @@ const compounded = async () => {
 
 const mintByDai = async (senderWallet) => {
   const dai = new web3.eth.Contract(daiABI, config.DAI.RINKEBY);
-  const encodeAbi = dai.methods.allocateTo(senderWallet.address, '200000000000000000000').encodeABI();
+  const encodeAbi = dai.methods.allocateTo(senderWallet.address, '2000000000000000000000').encodeABI();
 
   const nonce = await web3.eth.getTransactionCount(senderWallet.address);
   const txParams = {
