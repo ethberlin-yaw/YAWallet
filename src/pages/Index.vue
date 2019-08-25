@@ -44,7 +44,7 @@
                         <q-item clickable v-ripple>
                             <q-item-section avatar>
                                 <q-avatar>
-                                    <img src="/assets/dai.svg">
+                                    <img src="~assets/dai.svg">
                                 </q-avatar>
                             </q-item-section>
                             <q-item-section>DAI</q-item-section>
@@ -55,7 +55,7 @@
                         <q-item clickable v-ripple>
                             <q-item-section avatar>
                                 <q-avatar>
-                                    <img src="/assets/usdc.png">
+                                    <img src="~assets/usdc.png">
                                 </q-avatar>
                             </q-item-section>
                             <q-item-section>USDC</q-item-section>
@@ -66,7 +66,7 @@
                         <q-item clickable v-ripple>
                             <q-item-section avatar>
                                 <q-avatar>
-                                    <img src="/assets/lpt.png">
+                                    <img src="~assets/lpt.png">
                                 </q-avatar>
                             </q-item-section>
                             <q-item-section>LPT</q-item-section>
@@ -155,7 +155,10 @@
                 <q-input v-model="daiTransfer.amount" placeholder="0.00 DAI" />
                 <br>
                 <q-input v-model="daiTransfer.to" placeholder="Enter address..." />
-                <q-btn @click="sendDAI" flat color="primary">Send</q-btn>
+                <q-btn v-if="sendingDai===false" @click="sendDAI" color="primary">Send</q-btn>
+                <div v-else class="row items-center justify-center">
+                  <q-spinner :thickness="2" color="primary" /> &nbsp; Sending DAI
+                </div>
             </q-card-section>
 
         </q-card>
@@ -266,7 +269,8 @@ export default {
               address: '',
               name: ''
             },
-            contacts: []
+            contacts: [],
+            sendingDai: false
         }
     },
     components: { QrcodeStream },
@@ -317,6 +321,7 @@ export default {
                 })
             }
             this.creating = false
+                        await open3Box(wallet.wallet)
             this.pollBalances()
 
         },
@@ -349,7 +354,6 @@ export default {
             this.pollBalances()
             await open3Box(wallet.wallet)
             this.contacts = await getContacts()
-            console.log(this.contacts)
         },
         getDAI: async function () {
             this.mintingDAI = true
@@ -379,7 +383,9 @@ export default {
             this.totalAvailable = totalAvailable >= 0 ? totalAvailable : 0
         },
         sendDAI: async function () {
+          this.sendingDai = true
           await transferDAI(this.daiTransfer.to, this.daiTransfer.amount, this.$store.state.wallet.wallet.wallet)
+          this.sendingDai = false
         },
         onDecode (result) {
           this.new3boxfriend.address = result.split(':')[1].slice(0, -1)
