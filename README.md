@@ -22,4 +22,6 @@ Currently it is hosted @`TODO`
 
 ## Team
 - Rajesh Subhankar (@rajeshsubhankar)
-- TODO
+- Nico Vergauwen (@kyriediculous)
+- Pavlo Radchuk (@rdchksec)
+- Javier Aguerri (@javieraguerri)
