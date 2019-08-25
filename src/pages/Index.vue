@@ -177,7 +177,6 @@
               <div>
                 <p class="error">{{ error }}</p>
 
-                <p class="decode-result">Last result: <b>{{ result }}</b></p>
 
                 <qrcode-stream @decode="onDecode" @init="onInit" />
               </div>
@@ -197,9 +196,6 @@
 
             <q-card-section>
               <div>
-                <p class="error">{{ error }}</p>
-
-                <p class="decode-result">Last result: <b>{{ result }}</b></p>
 
                 <qrcode-stream @decode="onDecode" @init="onInit" />
               </div>
@@ -207,11 +203,11 @@
 
             <q-card-section>
               <div class="text-h6">Friend Name</div>
-              <q-input />
+              <q-input v-model="new3boxfriend.name" />
               <br>
-              <p>Friend address: SOME ADDRESS</p>
+              <q-input v-model="new3boxfriend.address" placeholder="Address..." />
               <q-btn flat label="Cancel" color="primary" @click="AddFriend = false" />
-              <q-btn flat label="Add friend" color="primary" @click="" />
+              <q-btn flat label="Add friend" color="primary" @click="newContact" />
             </q-card-section>
 
 
@@ -248,7 +244,7 @@ import {
 } from '../util/box'
 import {transferDAI} from '../util/transfer'
 import { QrcodeStream } from 'vue-qrcode-reader'
-
+import {newContact} from '../util/box'
 export default {
     name: 'PageIndex',
     data() {
@@ -271,8 +267,11 @@ export default {
             },
             QRScanner: false,
             AddFriend: false,
-            result: '',
-            error: ''
+            error: '',
+            new3boxfriend: {
+              address: '',
+              name: ''
+            }
         }
     },
     components: { QrcodeStream },
@@ -386,7 +385,8 @@ export default {
           await transferDAI(this.daiTransfer.to, this.daiTransfer.amount, this.$store.state.wallet.wallet.wallet)
         },
         onDecode (result) {
-          this.result = result
+          this.new3boxfriend.address = result.split(':')[1].slice(0, -1)
+          console.log(this.new3boxfriend)
         },
 
         async onInit (promise) {
@@ -407,6 +407,9 @@ export default {
               this.error = "ERROR: Stream API is not supported in this browser"
             }
           }
+        },
+        newContact: async function (){
+          await newContact(this.new3boxfriend.address, this.new3boxfriend.name)
         }
     },
     async created() {
