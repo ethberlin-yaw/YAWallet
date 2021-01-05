@@ -12,7 +12,7 @@
   "dependencies": {
     "3box": "^1.10.7",
     "@quasar/extras": "^1.0.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "bip39": "^2.5.0",
     "crypto-js": "^3.1.9-1",
     "ethereum-qr-code": "^0.3.0",
